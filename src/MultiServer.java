@@ -102,10 +102,10 @@ public class MultiServer {
                 for (int i = 0; i < v.size(); i++) {
                     System.out.println(v.get(i).getName());
                     if (!(v.get(i).getName().equals(sb.toString().trim())) && !(v.get(i).getName().contains("Thread"))) {
-                        out.write((Integer.toString(i + 1) + ". " + v.get(i).getName()).getBytes());
+                        out.write((Integer.toString(i + 1) + ". " + v.get(i).getName() + "\n").getBytes());
                     }
                 }
-                out.write("\n".getBytes());
+                out.write("endList\n".getBytes());
 
 
                 while (isInterrupted() == false) {

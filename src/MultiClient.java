@@ -48,21 +48,27 @@ public class MultiClient extends Thread {
             StringBuffer sb = new StringBuffer();
             //czytanie ze strumienia
             while ((k = in.read()) != -1 && k != '\n')
-                sb.append((char)k);
+                sb.append((char) k);
 
 
             login = sb.toString().trim();
             System.out.println("Twój login: " + login);
 
             // lista użytkowników
-            System.out.println("Lista użytkowników");
+            System.out.println("Lista zalogowanych użytkowników");
             k = 0;
             sb = new StringBuffer();
-            //czytanie ze strumienia
-            while ((k = in.read()) != -1 && k != '\n')
-                sb.append((char)k);
 
-            System.out.println(sb.toString().trim());
+            do {
+                sb.delete(0, sb.length());
+                while ((k = in.read()) != -1 && k != '\n')
+                    sb.append((char) k);
+
+                if (!sb.toString().equals("endList")) {
+                    System.out.println(sb.toString().trim());
+                }
+            } while (!sb.toString().equals("endList"));
+
 
             start();
 
