@@ -77,11 +77,12 @@ public class MultiServer {
             try {
                 int k = 0;
                 StringBuffer sb = new StringBuffer();
-                boolean userName = false;
+                boolean userName;
                 String login = null;
 
 
                 do{
+                    userName = true;
                     k = 0;
                     sb.delete(0, sb.length());
                     // login użytkownika i potwierdzenie loginu
@@ -92,13 +93,13 @@ public class MultiServer {
                     //wysłanie loginu klienta
                     for (int i = 0; i < v.size(); i++) {
                         if (v.get(i).getName().equals(sb.toString().trim())) {
-                            userName = true;
+                            userName = false;
                         }
                     }
 
                     out.write((Boolean.toString(userName)).getBytes());
                     out.write("\n".getBytes());
-                }while(userName);
+                }while(!userName);
 
 
                 login = sb.toString().trim();
@@ -129,11 +130,18 @@ public class MultiServer {
                     System.out.println(sb);
 
                     String[] parts = sb.toString().split(":");
-                    String user = parts[0];
-                    String userTo = parts[1];
-                    String data = parts[2];
+                    if(parts.length == 3 && !(parts[2].equals("/showFiles"))){
+                        String user = parts[0];
+                        String userTo = parts[1];
+                        String data = parts[2];
 
-                    sendTo(user, userTo, data);
+                        sendTo(user, userTo, data);
+                    } else if(parts[1].equals("/showFiles")){
+                        String user = parts[0];
+                        showFiles(user);
+                    }
+
+
                 }
 
 
@@ -184,6 +192,15 @@ public class MultiServer {
             for(int i = 0; i<v.size(); i++){
                 if(v.get(i).getName().equals(userTo)){
                     v.get(i).send((user + ":" + data).getBytes());
+                }
+            }
+        }
+
+        void showFiles(String user) {
+            //v.forEach(t -> t.send(data));
+            for(int i=0; i<v.size(); i++){
+                if(!(v.get(i).getName().equals(this.getName()))){
+                    v.get(i).send(user);
                 }
             }
         }

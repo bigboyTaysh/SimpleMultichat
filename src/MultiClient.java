@@ -54,8 +54,10 @@ public class MultiClient extends Thread {
                 while ((k = in.read()) != -1 && k != '\n')
                     sb.append((char) k);
 
+                // sprawdzenie komunikatu od serwera
                 newLogin = sb.toString().trim();
-                if(newLogin.toLowerCase().equals("false")){
+                if(newLogin.toLowerCase().equals("true")){
+                    System.out.println("Pomyślnie zalogowano!");
                     userName = false;
                 } else {
                     System.out.println("Podany login istnieje!");
