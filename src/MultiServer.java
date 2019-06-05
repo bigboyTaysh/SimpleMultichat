@@ -41,9 +41,7 @@ public class MultiServer {
             //dodawanie watku do listy
             v.add(thread);
         }
-
     }
-
 
     /**
      * Klasa dziedziczaca po Thread, obslugujaca klientow
@@ -98,14 +96,18 @@ public class MultiServer {
                 out.write(login.getBytes());
                 out.write("\n".getBytes());
 
-                // lista użytkowników
+                // ######### lista użytkowników (endList)
+
                 for (int i = 0; i < v.size(); i++) {
-                    System.out.println(v.get(i).getName());
                     if (!(v.get(i).getName().equals(sb.toString().trim())) && !(v.get(i).getName().contains("Thread"))) {
                         out.write((Integer.toString(i + 1) + ". " + v.get(i).getName() + "\n").getBytes());
                     }
                 }
                 out.write("endList\n".getBytes());
+
+                //wysłanie wiadomości o zalogowanym użytkowniku
+                sendToAll(("loggedIn").getBytes());
+                sendToAll(login.getBytes());
 
 
                 while (isInterrupted() == false) {
@@ -115,15 +117,15 @@ public class MultiServer {
                     while ((k = in.read()) != -1 && k != '\n')
                         sb.append((char) k);
 
-                    //wysylanie do wszystkich uczestnik�w czatu
+                    //wysylanie do użytkownika czatu
                     System.out.println(sb);
 
                     String[] parts = sb.toString().split(":");
-                    int id = Integer.parseInt(parts[0]);
-                    int idTo = Integer.parseInt(parts[1]);
+                    String user = parts[0];
+                    String userTo = parts[1];
                     String data = parts[2];
 
-                    sendTo(id, idTo, data);
+                    sendTo(user, userTo, data);
                 }
 
 
@@ -138,7 +140,6 @@ public class MultiServer {
                     e.printStackTrace();
                 }
             }
-
         }
 
         /**
@@ -163,24 +164,19 @@ public class MultiServer {
          * @param data - tablica bajt�w z danymi.
          */
         void sendToAll(byte[] data) {
-            v.forEach(t -> t.send(data));
+            //v.forEach(t -> t.send(data));
+            for(int i=0; i<v.size(); i++){
+                if(!(v.get(i).getName().equals(this.getName()))){
+                    v.get(i).send(data);
+                }
+            }
         }
 
-	/*
-	void sendTo(int id, int idTo, byte[] data){
-		byte[] id2 = String.valueOf(id).getBytes();
-		byte[] destination = new byte[id2.length + data.length];
-		System.arraycopy(id2, 0, destination, 0, id2.length);
-		System.arraycopy(data, 0, destination, id2.length, data.length);
-
-		v.get(idTo).send( destination);
-	}
-	*/
-
-        void sendTo(int id, int idTo, String data) {
-            if (idTo <= v.size()) {
-                v.get(idTo).send((String.valueOf(id) + ":" + data).getBytes());
-                // v.get(idTo).send("\n".getBytes());
+        void sendTo(String user, String userTo, String data) {
+            for(int i = 0; i<v.size(); i++){
+                if(v.get(i).getName().equals(userTo)){
+                    v.get(i).send((user + ":" + data).getBytes());
+                }
             }
         }
     }

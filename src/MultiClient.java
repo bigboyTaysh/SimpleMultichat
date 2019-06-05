@@ -2,6 +2,7 @@ import java.io.*;
 import java.net.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Scanner;
 
 public class MultiClient extends Thread {
 
@@ -20,9 +21,6 @@ public class MultiClient extends Thread {
         client.run2();
     }
 
-    public void add(String data) {
-        wiadomosci.add(data);
-    }
 
     public void run2() {
         try {
@@ -55,7 +53,7 @@ public class MultiClient extends Thread {
             System.out.println("Twój login: " + login);
 
             // lista użytkowników
-            System.out.println("Lista zalogowanych użytkowników");
+            System.out.println("Lista zalogowanych użytkowników:");
             k = 0;
             sb.delete(0, sb.length());
 
@@ -82,7 +80,7 @@ public class MultiClient extends Thread {
 
                 //TimeUnit.SECONDS.sleep(1);
                 //KONIEC FAZA 1.
-                out.write((id + ":" + data).getBytes());
+                out.write((login + ":" + data).getBytes());
                 out.write("\r\n".getBytes());// dokladanie znak�w konca wiercza
 
             }
@@ -98,7 +96,6 @@ public class MultiClient extends Thread {
 
         try {
             while (true) {
-
                 int k = 0;
                 StringBuffer sb = new StringBuffer();
                 while (in.available() != 0) {
@@ -108,16 +105,30 @@ public class MultiClient extends Thread {
                     while ((k = in.read()) != -1 && k != '\n')
                         sb.append((char) k);
 
-                    String parts1 = sb.toString().trim();
+                    String message = sb.toString().trim();
+                    // pobranie
+                    if (message.equals("loggedIn")) {
+                        k = 0;
+                        sb.delete(0, sb.length());
 
-                    wiadomosci2.add(parts1);
+                        while ((k = in.read()) != -1 && k != '\n')
+                            sb.append((char) k);
+                        wiadomosci.add(sb.toString().trim() + " zalogował się!");
+                    } else {
+                        wiadomosci2.add(message);
+                    }
+
                 }
 
                 while (!wiadomosci2.isEmpty()) {
                     String[] parts = wiadomosci2.get(0).split(":");
-                    System.out.println("Od: " + parts[0]);
-                    System.out.println("Wiadomość: " + parts[1]);
+                    System.out.println("Wiadomość od " + parts[0] + ": " + parts[1]);
                     wiadomosci2.remove(0);
+                }
+
+                while (!wiadomosci.isEmpty()) {
+                    System.out.println(wiadomosci.get(0));
+                    wiadomosci.remove(0);
                 }
 
                 sleep(500);
