@@ -66,8 +66,7 @@ public class MultiClient extends Thread {
                     System.out.println(sb.toString().trim());
                 }
             } while (!sb.toString().equals("endList"));
-
-
+            
             start();
 
             fromKeyboard = new BufferedReader(new InputStreamReader(System.in));
@@ -98,6 +97,7 @@ public class MultiClient extends Thread {
             while (true) {
                 int k = 0;
                 StringBuffer sb = new StringBuffer();
+                // pobranie powiadomienia od serwera
                 while (in.available() != 0) {
                     k = 0;
                     sb = new StringBuffer();
@@ -106,40 +106,35 @@ public class MultiClient extends Thread {
                         sb.append((char) k);
 
                     String message = sb.toString().trim();
-                    // pobranie
+                    //sprawdzenie wiadomości od serwera
+                    //jeśli loggedIn dodanie do listy wiadomosci, informacja o zalogowanym uzytkowniku
                     if (message.equals("loggedIn")) {
                         k = 0;
                         sb.delete(0, sb.length());
 
                         while ((k = in.read()) != -1 && k != '\n')
                             sb.append((char) k);
-                        wiadomosci.add(sb.toString().trim() + " zalogował się!");
+                        wiadomosci2.add(sb.toString().trim() + " zalogował się!");
                     } else {
                         wiadomosci2.add(message);
                     }
-
                 }
 
                 while (!wiadomosci2.isEmpty()) {
                     String[] parts = wiadomosci2.get(0).split(":");
-                    System.out.println("Wiadomość od " + parts[0] + ": " + parts[1]);
-                    wiadomosci2.remove(0);
+                    if(parts.length == 2){
+                        System.out.println("Wiadomość od " + parts[0] + ": " + parts[1]);
+                        wiadomosci2.remove(0);
+                    } else {
+                        System.out.println(parts[0]);
+                        wiadomosci2.remove(0);
+                    }
                 }
-
-                while (!wiadomosci.isEmpty()) {
-                    System.out.println(wiadomosci.get(0));
-                    wiadomosci.remove(0);
-                }
-
-                sleep(500);
-
             }
         } catch (UnknownHostException uhe) {
             System.err.println(uhe);
         } catch (IOException ioe) {
             System.err.println(ioe);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
         }
     }
 }
