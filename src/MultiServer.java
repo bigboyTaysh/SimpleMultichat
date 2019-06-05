@@ -8,6 +8,7 @@ public class MultiServer {
      * Lista watkow obslugujacych klientow
      */
     List<ClientThread> v = new ArrayList<>();
+    private int id;
 
 
     /**
@@ -40,6 +41,7 @@ public class MultiServer {
             ClientThread thread = new ClientThread(socket);
             //dodawanie watku do listy
             v.add(thread);
+            id = v.size() - 1;
         }
     }
 
@@ -73,33 +75,39 @@ public class MultiServer {
          */
         public void run() {
             try {
-
-                // login użytkownika i potwierdzenie loginu
-                String login = null;
                 int k = 0;
                 StringBuffer sb = new StringBuffer();
-                //czytanie ze strumienia
-                while ((k = in.read()) != -1 && k != '\n')
-                    sb.append((char) k);
+                boolean userName = false;
+                String login = null;
 
 
-                System.out.println(v.size());
-                v.get(v.size() - 1).setName(sb.toString().trim());
-                //wysłanie id klienta
-                for (int i = 0; i < v.size(); i++) {
-                    System.out.println(v.get(i).getName());
-                    if (v.get(i).getName().equals(sb.toString().trim())) {
-                        login = v.get(i).getName();
+                do{
+                    k = 0;
+                    sb.delete(0, sb.length());
+                    // login użytkownika i potwierdzenie loginu
+                    //czytanie ze strumienia
+                    while ((k = in.read()) != -1 && k != '\n')
+                        sb.append((char) k);
+
+                    //wysłanie loginu klienta
+                    for (int i = 0; i < v.size(); i++) {
+                        if (v.get(i).getName().equals(sb.toString().trim())) {
+                            userName = true;
+                        }
                     }
-                }
 
-                out.write(login.getBytes());
-                out.write("\n".getBytes());
+                    out.write((Boolean.toString(userName)).getBytes());
+                    out.write("\n".getBytes());
+                }while(userName);
 
-                // ######### lista użytkowników (endList)
 
+                login = sb.toString().trim();
+                v.get(id).setName(login);
+
+
+                // ######### lista użytkowników oprócz użytkowników bez nazwy (endList)
                 for (int i = 0; i < v.size(); i++) {
-                    if (!(v.get(i).getName().equals(sb.toString().trim())) && !(v.get(i).getName().contains("Thread"))) {
+                    if (!(v.get(i).getName().equals(login)) && !(v.get(i).getName().contains("Thread"))) {
                         out.write((Integer.toString(i + 1) + ". " + v.get(i).getName() + "\n").getBytes());
                     }
                 }

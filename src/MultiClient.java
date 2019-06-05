@@ -34,23 +34,36 @@ public class MultiClient extends Thread {
 
             // login użytkownika
             BufferedReader fromKeyboard = new BufferedReader(new InputStreamReader(System.in));
-            System.out.println("login");
-
-            String data = fromKeyboard.readLine();
-
-            out.write((data).getBytes());
-            out.write("\r\n".getBytes());// dokladanie znak�w konca wiercza
-
-            // potwierdzenie loginu
             int k = 0;
             StringBuffer sb = new StringBuffer();
-            //czytanie ze strumienia
-            while ((k = in.read()) != -1 && k != '\n')
-                sb.append((char) k);
+            String data = null, newLogin = null;
+            //sprawdzenie czy istnieje uzytkownik o podanej nazwie
+            boolean userName = true;
 
+            do {
+                System.out.print("Podaj login: ");
+                data = fromKeyboard.readLine();
 
-            login = sb.toString().trim();
-            System.out.println("Twój login: " + login);
+                out.write((data).getBytes());
+                out.write("\n".getBytes());// dokladanie znak�w konca wiercza
+
+                k = 0;
+                sb.delete(0, sb.length());
+                // potwierdzenie loginu
+                //czytanie ze strumienia
+                while ((k = in.read()) != -1 && k != '\n')
+                    sb.append((char) k);
+
+                newLogin = sb.toString().trim();
+                if(newLogin.toLowerCase().equals("false")){
+                    userName = false;
+                } else {
+                    System.out.println("Podany login istnieje!");
+                    userName = true;
+                }
+            }while(userName);
+
+            login = data;
 
             // lista użytkowników
             System.out.println("Lista zalogowanych użytkowników:");
@@ -66,7 +79,7 @@ public class MultiClient extends Thread {
                     System.out.println(sb.toString().trim());
                 }
             } while (!sb.toString().equals("endList"));
-            
+
             start();
 
             fromKeyboard = new BufferedReader(new InputStreamReader(System.in));
@@ -114,20 +127,20 @@ public class MultiClient extends Thread {
 
                         while ((k = in.read()) != -1 && k != '\n')
                             sb.append((char) k);
-                        wiadomosci2.add(sb.toString().trim() + " zalogował się!");
+                        wiadomosci.add(sb.toString().trim() + " zalogował się!");
                     } else {
-                        wiadomosci2.add(message);
+                        wiadomosci.add(message);
                     }
                 }
 
-                while (!wiadomosci2.isEmpty()) {
-                    String[] parts = wiadomosci2.get(0).split(":");
+                while (!wiadomosci.isEmpty()) {
+                    String[] parts = wiadomosci.get(0).split(":");
                     if(parts.length == 2){
                         System.out.println("Wiadomość od " + parts[0] + ": " + parts[1]);
-                        wiadomosci2.remove(0);
+                        wiadomosci.remove(0);
                     } else {
                         System.out.println(parts[0]);
-                        wiadomosci2.remove(0);
+                        wiadomosci.remove(0);
                     }
                 }
             }
