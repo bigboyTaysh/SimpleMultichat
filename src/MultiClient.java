@@ -57,7 +57,7 @@ public class MultiClient extends Thread {
             // lista użytkowników
             System.out.println("Lista zalogowanych użytkowników");
             k = 0;
-            sb = new StringBuffer();
+            sb.delete(0, sb.length());
 
             do {
                 sb.delete(0, sb.length());
