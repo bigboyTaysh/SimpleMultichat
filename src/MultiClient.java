@@ -88,7 +88,6 @@ public class MultiClient extends Thread {
             System.out.println("Format wiadomości -> odbiorca:treść wiadomości");
 
             while (true) {
-                // sleep(1000);
                 //Czytanie danych ze standardowego urzadzenia wejscia(klawiatury) po linii
                 data = fromKeyboard.readLine();
 
@@ -96,7 +95,30 @@ public class MultiClient extends Thread {
                 //KONIEC FAZA 1.
                 out.write((login + ":" + data).getBytes());
                 out.write("\r\n".getBytes());// dokladanie znak�w konca wiercza
+                if(data.contains("/getFile")){
+                    int bytesRead;
+                    int current = 0;
 
+                    while(true) {
+
+                        DataInputStream clientData = new DataInputStream(in);
+
+                        String fileName = clientData.readUTF();
+                        fileName = login + fileName;
+                        OutputStream output = new FileOutputStream(fileName);
+                        long size = clientData.readLong();
+                        byte[] buffer = new byte[1024];
+                        while (size > 0 && (bytesRead = clientData.read(buffer, 0, (int)Math.min(buffer.length, size))) != -1)
+                        {
+                            output.write(buffer, 0, bytesRead);
+                            size -= bytesRead;
+                        }
+
+                        // Closing the FileOutputStream handle
+                        clientData.close();
+                        output.close();
+                    }
+                }
             }
         } catch (UnknownHostException uhe) {
             System.err.println(uhe);
@@ -107,7 +129,6 @@ public class MultiClient extends Thread {
 
     public void run() {
         //wysylanie danych strumieniem wyjsciowym do serwera
-
         try {
             while (true) {
                 int k = 0;
@@ -122,8 +143,8 @@ public class MultiClient extends Thread {
 
                     String message = sb.toString().trim();
                     //sprawdzenie wiadomości od serwera
-                    //jeśli loggedIn dodanie do listy wiadomosci, informacja o zalogowanym uzytkowniku
-                    if (message.equals("loggedIn")) {
+                    //jeśli /loggedIn dodanie do listy wiadomosci, informacja o zalogowanym uzytkowniku
+                    if (message.equals("/loggedIn")) {
                         k = 0;
                         sb.delete(0, sb.length());
 

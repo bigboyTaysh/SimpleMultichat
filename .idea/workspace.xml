@@ -15,43 +15,41 @@
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
-  <component name="DockManager">
-    <window id="1">
-      <content type="file-editors">
-        <state>
-          <leaf>
-            <file pinned="false" current-in-tab="true">
-              <entry file="file://$PROJECT_DIR$/src/MultiClient.java">
-                <provider selected="true" editor-type-id="text-editor">
-                  <state relative-caret-position="1097">
-                    <caret line="139" column="42" lean-forward="true" selection-start-line="139" selection-start-column="42" selection-end-line="139" selection-end-column="42" />
-                    <folding>
-                      <element signature="imports" expanded="true" />
-                    </folding>
-                  </state>
-                </provider>
-              </entry>
-            </file>
-          </leaf>
-        </state>
-      </content>
-    </window>
-  </component>
   <component name="FileEditorManager">
-    <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/src/MultiServer.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="508">
-              <caret line="202" column="38" selection-start-line="202" selection-start-column="38" selection-end-line="202" selection-end-column="38" />
-              <folding>
-                <element signature="imports" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-    </leaf>
+    <splitter split-orientation="horizontal" split-proportion="0.48710603">
+      <split-first>
+        <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
+          <file pinned="false" current-in-tab="true">
+            <entry file="file://$PROJECT_DIR$/src/MultiServer.java">
+              <provider selected="true" editor-type-id="text-editor">
+                <state relative-caret-position="173">
+                  <caret line="125" selection-start-line="125" selection-end-line="125" />
+                  <folding>
+                    <element signature="imports" expanded="true" />
+                  </folding>
+                </state>
+              </provider>
+            </entry>
+          </file>
+        </leaf>
+      </split-first>
+      <split-second>
+        <leaf>
+          <file pinned="false" current-in-tab="true">
+            <entry file="file://$PROJECT_DIR$/src/MultiClient.java">
+              <provider selected="true" editor-type-id="text-editor">
+                <state relative-caret-position="344">
+                  <caret line="114" column="25" lean-forward="true" selection-start-line="114" selection-start-column="25" selection-end-line="114" selection-end-column="25" />
+                  <folding>
+                    <element signature="imports" expanded="true" />
+                  </folding>
+                </state>
+              </provider>
+            </entry>
+          </file>
+        </leaf>
+      </split-second>
+    </splitter>
   </component>
   <component name="FileTemplateManagerImpl">
     <option name="RECENT_TEMPLATES">
@@ -63,6 +61,12 @@
   <component name="FindInProjectRecents">
     <findStrings>
       <find>wiadomosci</find>
+      <find>fis</find>
+      <find>bis</find>
+      <find>os</find>
+      <find>output</find>
+      <find>l</find>
+      <find>tutaj</find>
     </findStrings>
   </component>
   <component name="Git.Settings">
@@ -71,16 +75,16 @@
   <component name="IdeDocumentHistory">
     <option name="CHANGED_PATHS">
       <list>
-        <option value="$PROJECT_DIR$/src/MultiClient.java" />
         <option value="$PROJECT_DIR$/src/MultiServer.java" />
+        <option value="$PROJECT_DIR$/src/MultiClient.java" />
       </list>
     </option>
   </component>
   <component name="ProjectFrameBounds" extendedState="6">
-    <option name="x" value="-16" />
-    <option name="y" value="2" />
-    <option name="width" value="1248" />
-    <option name="height" value="1055" />
+    <option name="x" value="-8" />
+    <option name="y" value="-8" />
+    <option name="width" value="1456" />
+    <option name="height" value="876" />
   </component>
   <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
   <component name="ProjectView">
@@ -90,8 +94,8 @@
     <panes />
   </component>
   <component name="PropertiesComponent">
-    <property name="com.android.tools.idea.instantapp.provision.ProvisionBeforeRunTaskProvider.myTimeStamp" value="1559762800354" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
+    <property name="com.android.tools.idea.instantapp.provision.ProvisionBeforeRunTaskProvider.myTimeStamp" value="1559837167770" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/../lab4" />
   </component>
   <component name="RunDashboard">
     <option name="ruleStates">
@@ -154,7 +158,6 @@
   </component>
   <component name="ToolWindowManager">
     <frame x="-8" y="-8" width="1456" height="876" extended-state="6" />
-    <editor active="true" />
     <layout>
       <window_info content_ui="combo" id="Project" order="0" weight="0.019255456" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
@@ -164,8 +167,8 @@
       <window_info id="Capture Tool" order="5" />
       <window_info id="Favorites" order="6" side_tool="true" />
       <window_info anchor="bottom" id="Message" order="0" />
-      <window_info anchor="bottom" id="Find" order="1" />
-      <window_info anchor="bottom" id="Run" order="2" weight="0.2745626" />
+      <window_info anchor="bottom" id="Find" order="1" weight="0.32974428" />
+      <window_info anchor="bottom" id="Run" order="2" weight="0.23553163" />
       <window_info anchor="bottom" id="Debug" order="3" weight="0.4" />
       <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
       <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
@@ -189,10 +192,22 @@
     <option name="LAST_COMMIT_MESSAGE" value="lista użytkowników" />
   </component>
   <component name="editorHistoryManager">
+    <entry file="file://$USER_HOME$/AppData/Local/Temp/Rar$DRa14748.44883/File Transfer/Client/src/client/Client.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-969" />
+      </provider>
+    </entry>
+    <entry file="jar://C:/Program Files/Java/jdk1.8.0_201/src.zip!/java/net/SocketInputStream.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="181">
+          <caret line="223" selection-start-line="223" selection-end-line="223" />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/src/MultiClient.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1097">
-          <caret line="139" column="42" lean-forward="true" selection-start-line="139" selection-start-column="42" selection-end-line="139" selection-end-column="42" />
+        <state relative-caret-position="344">
+          <caret line="114" column="25" lean-forward="true" selection-start-line="114" selection-start-column="25" selection-end-line="114" selection-end-column="25" />
           <folding>
             <element signature="imports" expanded="true" />
           </folding>
@@ -201,8 +216,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/src/MultiServer.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="508">
-          <caret line="202" column="38" selection-start-line="202" selection-start-column="38" selection-end-line="202" selection-end-column="38" />
+        <state relative-caret-position="173">
+          <caret line="125" selection-start-line="125" selection-end-line="125" />
           <folding>
             <element signature="imports" expanded="true" />
           </folding>

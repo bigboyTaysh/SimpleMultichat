@@ -115,7 +115,7 @@ public class MultiServer {
                 out.write("endList\n".getBytes());
 
                 //wysłanie wiadomości o zalogowanym użytkowniku
-                sendToAll(("loggedIn").getBytes());
+                sendToAll(("/loggedIn").getBytes());
                 sendToAll(login.getBytes());
 
 
@@ -129,22 +129,34 @@ public class MultiServer {
                     //wysylanie do użytkownika czatu
                     System.out.println(sb);
 
-                    String[] parts = sb.toString().split(":");
-                    if(parts.length == 3 && !(parts[2].equals("/showFiles"))){
+                    String[] parts = sb.toString().trim().split(":");
+                    if(parts.length == 3 && !(parts[1].equals("/showFiles")) && !(parts[1].equals("/getFile"))){
                         String user = parts[0];
                         String userTo = parts[1];
                         String data = parts[2];
 
                         sendTo(user, userTo, data);
-                    } else if(parts[1].equals("/showFiles")){
+                    } else if (parts[1].equals("/showFiles") && parts.length == 2){
                         String user = parts[0];
                         showFiles(user);
+
+                    } else if (parts[1].equals("/getFile")){
+                        String user = parts[0];
+                        String file = parts[2];
+                        System.out.println(user);
+                        System.out.println(file);
+
+                        int idUser = 0;
+                        for(int i = 0; i<v.size(); i++){
+                            if(v.get(i).getName().equals(user)){
+                                idUser = i;
+                            }
+                        }
+
+                        getFile(user,file);
+
                     }
-
-
                 }
-
-
             } catch (IOException e) {
                 e.printStackTrace();
             } finally {
@@ -152,6 +164,7 @@ public class MultiServer {
                     in.close();
                     out.close();
                     socket.close();
+
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
@@ -197,12 +210,57 @@ public class MultiServer {
         }
 
         void showFiles(String user) {
-            //v.forEach(t -> t.send(data));
-            for(int i=0; i<v.size(); i++){
-                if(!(v.get(i).getName().equals(this.getName()))){
-                    v.get(i).send(user);
+            File folder = new File("C:\\Users\\wolak\\OneDrive\\SEM 2\\TS\\SimpleMultichat\\ServerFiles");
+            File[] listOfFiles = folder.listFiles();
+            int idUser = 0;
+
+            for(int i = 0; i<v.size(); i++){
+                if(v.get(i).getName().equals(user)){
+                    idUser = i;
                 }
             }
+
+            for (int i = listOfFiles.length-1; i >= 0 ; i--) {
+                if (listOfFiles[i].isFile()) {
+                    System.out.println("File "+ (i) +". " + listOfFiles[i].getName());
+                    v.get(idUser).send((((i) +" " + listOfFiles[i].getName()).getBytes()));
+                } else if (listOfFiles[i].isDirectory()) {
+                    System.out.println("Directory " + listOfFiles[i].getName());
+                }
+            }
+        }
+
+        private void getFile(String user, String file) throws IOException {
+            out.write("/getFile".getBytes());
+
+
+            //Send file
+            File myFile = new File("C:\\Users\\wolak\\OneDrive\\SEM 2\\TS\\SimpleMultichat\\ServerFiles\\" + file);
+            byte[] mybytearray = new byte[(int) myFile.length()];
+
+            FileInputStream fis = new FileInputStream(myFile);
+            BufferedInputStream bis = new BufferedInputStream(fis);
+            //bis.read(mybytearray, 0, mybytearray.length);
+
+            DataInputStream dis = new DataInputStream(bis);
+            dis.readFully(mybytearray, 0, mybytearray.length);
+
+            OutputStream os = socket.getOutputStream();
+
+            //Sending file name and file size to the server
+            DataOutputStream dos = new DataOutputStream(os);
+            dos.writeUTF(myFile.getName());
+            dos.writeLong(mybytearray.length);
+            dos.write(mybytearray, 0, mybytearray.length);
+            dos.flush();
+
+            //Sending file data to the server
+            os.write(mybytearray, 0, mybytearray.length);
+            os.flush();
+
+            //Closing socket
+            os.close();
+            dos.close();
         }
     }
 }
