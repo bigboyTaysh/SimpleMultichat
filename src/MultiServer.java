@@ -80,7 +80,7 @@ public class MultiServer {
                 boolean userName;
                 String login = null;
 
-
+                // sprawdzenie czy podany login użytkownika istnieje wśród innych wątków
                 do{
                     userName = true;
                     k = 0;
@@ -90,18 +90,19 @@ public class MultiServer {
                     while ((k = in.read()) != -1 && k != '\n')
                         sb.append((char) k);
 
-                    //wysłanie loginu klienta
+                    //jeśli login istnieje to false
                     for (int i = 0; i < v.size(); i++) {
                         if (v.get(i).getName().equals(sb.toString().trim())) {
                             userName = false;
                         }
                     }
 
+                    // wysłanie do klienta false
                     out.write((Boolean.toString(userName)).getBytes());
                     out.write("\n".getBytes());
-                }while(!userName);
+                }while(!userName); // powtarzaj dopóki false
 
-
+                // przypisanie loginu do wątku
                 login = sb.toString().trim();
                 v.get(id).setName(login);
 
@@ -126,35 +127,48 @@ public class MultiServer {
                     while ((k = in.read()) != -1 && k != '\n')
                         sb.append((char) k);
 
-                    //wysylanie do użytkownika czatu
-                    System.out.println(sb);
-
+                    // podzielenie wiadomości od klienta i podzielenie na części
                     String[] parts = sb.toString().trim().split(":");
-                    if(parts.length == 3 && !(parts[1].equals("/showFiles")) && !(parts[1].equals("/getFile"))){
-                        String user = parts[0];
-                        String userTo = parts[1];
-                        String data = parts[2];
+                    if(parts.length > 1){
+                        // jeśli są 3 części znaczy że zwykła wiadomość od:do:wiadomośc
+                        if(parts.length == 3 && !(parts[1].equals("/getFile"))){
+                            String user = parts[0];
+                            String userTo = parts[1];
+                            String data = parts[2];
 
-                        sendTo(user, userTo, data);
-                    } else if (parts[1].equals("/showFiles") && parts.length == 2){
-                        String user = parts[0];
-                        showFiles(user);
+                            sendTo(user, userTo, data);
+                            // jeśli /showFiles to wywołana metoda showFiles odpowiedzialna za wyłanie listy dostępnych plików
+                        } else if (parts[1].equals("/showFiles") && parts.length == 2){
+                            String user = parts[0];
+                            showFiles(user);
 
-                    } else if (parts[1].equals("/getFile")){
-                        String user = parts[0];
-                        String file = parts[2];
-                        System.out.println(user);
-                        System.out.println(file);
+                            // jeśli /getFile to wywołana metoda za wysłanie pliku o podanej nazwie /getFile:(nazwa)
+                        } else if (parts[1].equals("/getFile")){
+                            String user = parts[0];
+                            String file = parts[2];
 
-                        int idUser = 0;
-                        for(int i = 0; i<v.size(); i++){
-                            if(v.get(i).getName().equals(user)){
-                                idUser = i;
+
+                            sendFile(user,file);
+
+                            //jeśli /sendFile to odebranie pliku od klienta
+                        }  else if (parts[1].equals("/sendFile")){
+
+                            int bytesRead;
+                            int current = 0;
+                            DataInputStream clientData = new DataInputStream(in);
+
+                            String fileName = clientData.readUTF();
+                            OutputStream output = new FileOutputStream("C:\\Users\\wolak\\OneDrive\\SEM 2\\TS\\SimpleMultichat\\ServerFiles\\"  + fileName);
+                            long size = clientData.readLong();
+                            byte[] buffer = new byte[1024];
+                            while (size > 0 && (bytesRead = clientData.read(buffer, 0, (int)Math.min(buffer.length, size))) != -1)
+                            {
+                                output.write(buffer, 0, bytesRead);
+                                size -= bytesRead;
                             }
+
+                            // Closing the FileOutputStream handle
                         }
-
-                        getFile(user,file);
-
                     }
                 }
             } catch (IOException e) {
@@ -201,15 +215,20 @@ public class MultiServer {
             }
         }
 
+
+        // metoda wysyła wiadomość do wybranego klienta
         void sendTo(String user, String userTo, String data) {
             for(int i = 0; i<v.size(); i++){
                 if(v.get(i).getName().equals(userTo)){
-                    v.get(i).send((user + ":" + data).getBytes());
+                    v.get(i).send((user + ":" + userTo +":" + data).getBytes());
                 }
             }
         }
 
-        void showFiles(String user) {
+        // metoda pobiera listę plików i wysyła ją do wybranego klienta
+        void showFiles(String user)  throws IOException {
+            out.write("/showFiles".getBytes());
+            out.write("\n".getBytes());
             File folder = new File("C:\\Users\\wolak\\OneDrive\\SEM 2\\TS\\SimpleMultichat\\ServerFiles");
             File[] listOfFiles = folder.listFiles();
             int idUser = 0;
@@ -223,15 +242,19 @@ public class MultiServer {
             for (int i = listOfFiles.length-1; i >= 0 ; i--) {
                 if (listOfFiles[i].isFile()) {
                     System.out.println("File "+ (i) +". " + listOfFiles[i].getName());
-                    v.get(idUser).send((((i) +" " + listOfFiles[i].getName()).getBytes()));
+                    v.get(idUser).send(((listOfFiles[i].getName()).getBytes()));
                 } else if (listOfFiles[i].isDirectory()) {
                     System.out.println("Directory " + listOfFiles[i].getName());
                 }
             }
+
+            out.write("/endShowFiles\n".getBytes());
         }
 
-        private void getFile(String user, String file) throws IOException {
+        //metoda wysyła plik o podanej nazwie do podanego uzytkownika
+        private void sendFile(String user, String file) throws IOException {
             out.write("/getFile".getBytes());
+            out.write("\n".getBytes());
 
 
             //Send file
@@ -259,8 +282,8 @@ public class MultiServer {
             os.flush();
 
             //Closing socket
-            os.close();
-            dos.close();
         }
+
+
     }
 }
