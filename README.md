@@ -1,3 +1,3 @@
 # SimpleMultichat
 
-Prosty multichat w konsoli na TCP
+Prosty multichat + przesyłanie plików w konsoli na TCP
