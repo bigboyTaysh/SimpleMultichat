@@ -35,7 +35,7 @@ public class MultiServer {
 
             //Akceptacja polaczenia;
             Socket socket = server.accept();
-            System.out.println("New client");
+            System.out.println("New client: " + socket.getPort());
 
             //Tworzenie watku obsugujacego klienta
             ClientThread thread = new ClientThread(socket);
@@ -67,6 +67,7 @@ public class MultiServer {
 
             //uruchamianie watku
             start();
+
         }
 
         /**
@@ -109,7 +110,7 @@ public class MultiServer {
 
                 // ######### lista użytkowników oprócz użytkowników bez nazwy (endList)
                 for (int i = 0; i < v.size(); i++) {
-                    if (!(v.get(i).getName().equals(login)) && !(v.get(i).getName().contains("Thread"))) {
+                    if (!(v.get(i).getName().equals(login))) {
                         out.write((Integer.toString(i + 1) + ". " + v.get(i).getName() + "\n").getBytes());
                     }
                 }
@@ -118,6 +119,7 @@ public class MultiServer {
                 //wysłanie wiadomości o zalogowanym użytkowniku
                 sendToAll(("/loggedIn").getBytes());
                 sendToAll(login.getBytes());
+
 
 
                 while (isInterrupted() == false) {
@@ -168,6 +170,8 @@ public class MultiServer {
                             }
 
                             // Closing the FileOutputStream handle
+                        } else if(parts[1].equals("/exit")){
+                            sendToAll((parts[0] + " wylogował się!").getBytes());
                         }
                     }
                 }
@@ -284,6 +288,25 @@ public class MultiServer {
             //Closing socket
         }
 
+        private void disconnect() {
+            try {
+                if (in != null) in.close();
+            } catch (Exception e) {
+            }
+            try {
+                if (out != null) out.close();
+            } catch (Exception e) {
+            }
+            try {
+                if (socket != null) socket.close();
+            } catch (Exception e) {
+            }
+            for(int i=0; i<v.size(); i++){
+                if((v.get(i).getName().equals(getName()))){
+                    v.remove(v.get(i));
+                }
+            }
+        }
 
     }
 }

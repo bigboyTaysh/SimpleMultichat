@@ -7,7 +7,6 @@ import java.util.Scanner;
 public class MultiClient extends Thread {
 
     List<String> wiadomosci = new ArrayList<String>();
-    List<String> wiadomosci2 = new ArrayList<String>();
     private Socket socket;
     private InputStream in;
     private OutputStream out;
@@ -18,19 +17,14 @@ public class MultiClient extends Thread {
     public static void main(String[] args) {
         MultiClient client = new MultiClient();
 
-        client.run2();
-    }
-
-
-    public void run2() {
         try {
             // połączenie z serwerem
-            socket = new Socket("localhost", 2000);
+            client.socket = new Socket("localhost", 2000);
             System.out.println("Connected To Server ...");
 
             //Pobieranie strumieni do gniazda
-            in = socket.getInputStream();
-            out = socket.getOutputStream();
+            client.in = client.socket.getInputStream();
+            client.out = client.socket.getOutputStream();
             //Pobieranie strumienia do standardowego urzadzenia wejscia(klawiatury)
             //i buforowanie danych z niego przychodzacych
 
@@ -48,14 +42,14 @@ public class MultiClient extends Thread {
                 System.out.print("Podaj login: ");
                 data = fromKeyboard.readLine();
 
-                out.write((data).getBytes()); // wysłanie loginu do serwera
-                out.write("\n".getBytes());// dokladanie znak�w konca wiercza
+                client.out.write((data).getBytes()); // wysłanie loginu do serwera
+                client.out.write("\n".getBytes());// dokladanie znak�w konca wiercza
 
                 k = 0;
                 sb.delete(0, sb.length());
                 // potwierdzenie loginu
                 //czytanie ze strumienia
-                while ((k = in.read()) != -1 && k != '\n')
+                while ((k = client.in.read()) != -1 && k != '\n')
                     sb.append((char) k);
 
                 // sprawdzenie komunikatu od serwera
@@ -69,12 +63,13 @@ public class MultiClient extends Thread {
                 }
             } while (userName);
 
-            login = data;
+            client.login = data;
 
             System.out.println("Przydatne komendy:");
             System.out.println("/showFiles - pokazuje dostępne pliki na serwerze");
             System.out.println("/getFile:(nazwa) - przesyła wybrany plik do użytkownika");
             System.out.println("/sendFile - otwiera możliwość wyboru pliku do przesłania na serwer");
+            System.out.println("/exit - wylogowanie");
             System.out.println("Format wiadomości -> odbiorca:treść wiadomości");
 
             // lista użytkowników
@@ -85,7 +80,7 @@ public class MultiClient extends Thread {
             // wczytywanie linii z uzytkownikami do momentu otrzymania komendy /endList
             do {
                 sb.delete(0, sb.length());
-                while ((k = in.read()) != -1 && k != '\n')
+                while ((k = client.in.read()) != -1 && k != '\n')
                     sb.append((char) k);
 
                 if (!sb.toString().equals("endList")) {
@@ -93,7 +88,7 @@ public class MultiClient extends Thread {
                 }
             } while (!sb.toString().equals("endList"));
 
-            start();
+            client.start();
 
             fromKeyboard = new BufferedReader(new InputStreamReader(System.in));
 
@@ -103,8 +98,8 @@ public class MultiClient extends Thread {
                 data = fromKeyboard.readLine();
 
                 //wysłanie do serwera komunikat o treści (login aktualnego użytkownika):(treść)
-                out.write((login + ":" + data).getBytes());
-                out.write("\r\n".getBytes());// dokladanie znak�w konca wiercza
+                client.out.write((client.login + ":" + data).getBytes());
+                client.out.write("\r\n".getBytes());// dokladanie znak�w konca wiercza
 
                 // jeśli została wpisana komenda /sendFile otwira się możliwość wybrania pliku do przesyłu na serwer
                 if (data.equals("/sendFile")) {
@@ -136,7 +131,7 @@ public class MultiClient extends Thread {
                     DataInputStream dis = new DataInputStream(bis);
                     dis.readFully(mybytearray, 0, mybytearray.length);
 
-                    OutputStream os = socket.getOutputStream();
+                    OutputStream os = client.socket.getOutputStream();
 
                     //Sending file name and file size to the server
                     DataOutputStream dos = new DataOutputStream(os);
@@ -150,6 +145,8 @@ public class MultiClient extends Thread {
                     os.flush();
 
                     //Closing socket
+                } else if (data.equals("/exit")) {
+                    client.disconnect();
                 }
             }
         } catch (UnknownHostException uhe) {
@@ -158,6 +155,23 @@ public class MultiClient extends Thread {
             System.err.println(ioe);
         }
     }
+
+    private void disconnect() {
+        try {
+            if (in != null) in.close();
+        } catch (Exception e) {
+        }
+        try {
+            if (out != null) out.close();
+        } catch (Exception e) {
+        }
+        try {
+            if (socket != null) socket.close();
+        } catch (Exception e) {
+        }
+        System.exit(0);
+    }
+
 
     public void run() {
         //odbieranie danych strumieniem wejściowym od serwera
